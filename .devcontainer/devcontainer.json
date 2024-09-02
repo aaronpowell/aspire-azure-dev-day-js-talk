@@ -1,0 +1,28 @@
+{
+  "name": ".NET Aspire React demo",
+  "dockerFile": "Dockerfile",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-mssql.mssql",
+        "ms-azuretools.vscode-docker",
+        "github.copilot",
+        "github.codespaces",
+        "esbenp.prettier-vscode",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest"
+    },
+    "ghcr.io/azure/azure-dev/azd:latest": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {}
+  }
+}
