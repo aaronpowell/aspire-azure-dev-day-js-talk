@@ -1,0 +1,68 @@
+import {
+  ConsoleSpanExporter,
+  SimpleSpanProcessor,
+} from "@opentelemetry/sdk-trace-base";
+import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
+import { DocumentLoadInstrumentation } from "@opentelemetry/instrumentation-document-load";
+import { FetchInstrumentation } from "@opentelemetry/instrumentation-fetch";
+import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { registerInstrumentations } from "@opentelemetry/instrumentation";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
+import { Resource } from "@opentelemetry/resources";
+import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
+
+let provider: WebTracerProvider;
+
+export function initializeTelemetry(
+  otlpUrl: string,
+  headers: string,
+  resourceAttributes: string
+) {
+  const otlpOptions = {
+    url: `${otlpUrl}/v1/traces`,
+    headers: parseDelimitedValues(headers),
+  };
+
+  const attributes: Record<string, string> =
+    parseDelimitedValues(resourceAttributes);
+  attributes[ATTR_SERVICE_NAME] = "web";
+
+  provider = new WebTracerProvider({
+    resource: new Resource(attributes),
+  });
+  provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
+  provider.addSpanProcessor(
+    new SimpleSpanProcessor(new OTLPTraceExporter(otlpOptions))
+  );
+
+  provider.register({
+    // Changing default contextManager to use ZoneContextManager - supports asynchronous operations - optional
+    contextManager: new ZoneContextManager(),
+  });
+
+  // Registering instrumentations
+  registerInstrumentations({
+    instrumentations: [
+      new DocumentLoadInstrumentation(),
+      new FetchInstrumentation({
+        propagateTraceHeaderCorsUrls: [`${__API_ENDPOINT__}/api/books`],
+      }),
+    ],
+  });
+}
+
+function parseDelimitedValues(s: string): Record<string, string> {
+  const headers = s.split(","); // Split by comma
+  const o: Record<string, string> = {};
+
+  headers.forEach((header) => {
+    const [key, value] = header.split("="); // Split by equal sign
+    o[key.trim()] = value.trim(); // Add to the object, trimming spaces
+  });
+
+  return o;
+}
+
+export function getSpan(name: string) {
+  return provider.getTracer(name).startSpan(name);
+}

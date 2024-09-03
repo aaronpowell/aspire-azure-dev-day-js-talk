@@ -10,6 +10,8 @@ var apiService = builder.AddProject<Projects.BookStore_Api>("apiservice")
     .WithReference(db);
 
 _ = builder.AddNpmApp("web", "../bookstore-web", "dev")
+    .WithHttpEndpoint(env: "PORT")
+    .WithExternalHttpEndpoints()
     .WithReference(apiService);
 
 builder.Build().Run();

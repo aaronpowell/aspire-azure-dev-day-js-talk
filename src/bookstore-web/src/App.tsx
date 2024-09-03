@@ -1,10 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import { context, trace } from "@opentelemetry/api";
+import { getSpan } from "./otel";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const span = getSpan("fetching books");
+    context.with(trace.setSpan(context.active(), span), () => {
+      fetch(`${__API_ENDPOINT__}/api/books`)
+        .then((res) => res.json())
+        .then(console.log);
+    });
+  }, []);
 
   return (
     <>
@@ -29,7 +40,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
