@@ -1,21 +1,18 @@
-import { Span } from "@opentelemetry/api";
-import { getSpan } from "../../instrumentation";
-import { useLoaderData } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Link, useLoaderData } from "react-router-dom";
 import { Author, Book, fetchBooks } from "../../api/books";
+import { trace } from "@opentelemetry/api";
 
-export const loader = async () => await fetchBooks();
+export const loader = async () => {
+  return trace
+    .getTracer("View all books page")
+    .startActiveSpan("view all books loader", async (span) => {
+      const books = await fetchBooks();
+      span.end();
+      return books;
+    });
+};
 
 export const Component = () => {
-  const [span, setSpan] = useState<Span | undefined>();
-  useEffect(() => {
-    const s = getSpan("View Books page");
-    setSpan(s);
-    return () => {
-      s.end();
-    };
-  }, []);
-
   const books = useLoaderData() as Book[];
 
   function displayAuthors(authors: string | Author[]) {
@@ -45,7 +42,7 @@ export const Component = () => {
               <td>{book.title}</td>
               <td>{displayAuthors(book.authors)}</td>
               <td>
-                <a href={`/books/${book.id}`}>View</a>
+                <Link to={`/books/${book.id}`}>View</Link>
               </td>
             </tr>
           ))}

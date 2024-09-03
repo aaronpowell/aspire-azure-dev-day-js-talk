@@ -37,18 +37,16 @@ export function initializeTelemetry(
   );
 
   provider.register({
-    // Changing default contextManager to use ZoneContextManager - supports asynchronous operations - optional
     contextManager: new ZoneContextManager(),
   });
 
-  // Registering instrumentations
   registerInstrumentations({
     instrumentations: [
-      new DocumentLoadInstrumentation(),
+      // new DocumentLoadInstrumentation(),
       new FetchInstrumentation({
-        propagateTraceHeaderCorsUrls: [`${__API_ENDPOINT__}/api/books`],
+        propagateTraceHeaderCorsUrls: [new RegExp(`\\/api\\/*`)],
       }),
-      new UserInteractionInstrumentation(),
+      // new UserInteractionInstrumentation(),
     ],
   });
 }
@@ -63,8 +61,4 @@ function parseDelimitedValues(s: string): Record<string, string> {
   });
 
   return o;
-}
-
-export function getSpan(name: string) {
-  return provider.getTracer(name).startSpan(name);
 }

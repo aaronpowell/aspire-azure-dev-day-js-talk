@@ -1,14 +1,30 @@
 import { LoaderFunction, useLoaderData } from "react-router-dom";
 import { Book, getBook } from "../../api/books";
+import { trace } from "@opentelemetry/api";
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const bookId = params.id;
+  return trace
+    .getTracer(`View Book page`)
+    .startActiveSpan("view book loader", async (span) => {
+      const bookId = params.id;
 
-  if (!bookId) {
-    return { status: 404 };
-  }
+      if (!bookId) {
+        span.addEvent("Book ID not found");
+        span.end();
+        throw new Response("Not Found", { status: 404 });
+      }
 
-  return await getBook(bookId);
+      const book = await getBook(bookId);
+
+      if (!book) {
+        span.addEvent("Book not found");
+        span.end();
+        throw new Response("Not Found", { status: 404 });
+      }
+
+      span.end();
+      return book;
+    });
 };
 
 export const Component = () => {

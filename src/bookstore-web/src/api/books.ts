@@ -1,7 +1,6 @@
-import { context, trace } from "@opentelemetry/api";
-import { getSpan } from "../instrumentation";
+import { trace } from "@opentelemetry/api";
 
-const apiRoote = `${__API_ENDPOINT__}/api`;
+const apiRoot = `${__API_ENDPOINT__}/api`;
 
 export type Author = {
   id: number;
@@ -20,19 +19,28 @@ export type Book = {
 };
 
 export function fetchBooks(): Promise<Book[]> {
-  const span = getSpan("fetching books");
-  return context.with(trace.setSpan(context.active(), span), async () => {
-    const res = await fetch(`${apiRoote}/books`);
-    span.end();
-    return await res.json();
-  });
+  return trace
+    .getTracer("book api")
+    .startActiveSpan("fetching books", async (span) => {
+      const res = await fetch(`${apiRoot}/books`);
+      span.end();
+      return await res.json();
+    });
 }
 
-export function getBook(id: string): Promise<Book> {
-  const span = getSpan(`fetching book: ${id}`);
-  return context.with(trace.setSpan(context.active(), span), async () => {
-    const res = await fetch(`${apiRoote}/books/${id}`);
-    span.end();
-    return await res.json();
-  });
+export function getBook(id: string): Promise<Book | null> {
+  return trace
+    .getTracer("book api")
+    .startActiveSpan(`fetching book: ${id}`, async (span) => {
+      span.setAttribute("book.id", id);
+      const res = await fetch(`${apiRoot}/books/${id}`);
+      if (!res.ok) {
+        span.addEvent("Book not found");
+        span.addEvent("HTTP Error", { status: res.status });
+        span.end();
+        return null;
+      }
+      span.end();
+      return await res.json();
+    });
 }
