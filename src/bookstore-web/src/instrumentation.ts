@@ -6,6 +6,7 @@ import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { DocumentLoadInstrumentation } from "@opentelemetry/instrumentation-document-load";
 import { FetchInstrumentation } from "@opentelemetry/instrumentation-fetch";
 import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { UserInteractionInstrumentation } from "@opentelemetry/instrumentation-user-interaction";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
 import { Resource } from "@opentelemetry/resources";
@@ -25,7 +26,7 @@ export function initializeTelemetry(
 
   const attributes: Record<string, string> =
     parseDelimitedValues(resourceAttributes);
-  attributes[ATTR_SERVICE_NAME] = "web";
+  attributes[ATTR_SERVICE_NAME] = window.OTEL_SERVICE_NAME;
 
   provider = new WebTracerProvider({
     resource: new Resource(attributes),
@@ -47,6 +48,7 @@ export function initializeTelemetry(
       new FetchInstrumentation({
         propagateTraceHeaderCorsUrls: [`${__API_ENDPOINT__}/api/books`],
       }),
+      new UserInteractionInstrumentation(),
     ],
   });
 }

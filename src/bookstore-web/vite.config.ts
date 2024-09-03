@@ -11,9 +11,14 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       __API_ENDPOINT__: JSON.stringify(env.services__apiservice__https__0),
-      OTEL_EXPORTER_OTLP_ENDPOINT: JSON.stringify(env.OTEL_EXPORTER_OTLP_ENDPOINT),
-      OTEL_EXPORTER_OTLP_HEADERS: JSON.stringify(env.OTEL_EXPORTER_OTLP_HEADERS),
+      OTEL_EXPORTER_OTLP_ENDPOINT: JSON.stringify(
+        env.OTEL_EXPORTER_OTLP_ENDPOINT
+      ),
+      OTEL_EXPORTER_OTLP_HEADERS: JSON.stringify(
+        env.OTEL_EXPORTER_OTLP_HEADERS
+      ),
       OTEL_RESOURCE_ATTRIBUTES: JSON.stringify(env.OTEL_RESOURCE_ATTRIBUTES),
+      OTEL_SERVICE_NAME: JSON.stringify(env.OTEL_SERVICE_NAME),
     },
   };
 });

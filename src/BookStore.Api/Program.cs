@@ -1,4 +1,5 @@
 using BookStore.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +29,21 @@ app.UseExceptionHandler();
 app.MapGet("/api/books", (LibraryContext ctx, ILogger<Program> logger) =>
 {
     logger.LogInformation("Getting all books");
-    return ctx.Books;
+    return ctx.BookDetails;
+});
+
+app.MapGet("/api/books/{id}", (LibraryContext ctx, int id, ILogger<Program> logger) =>
+{
+    logger.LogInformation("Getting book with id {id}", id);
+    Book? book = ctx.Books.Include(b => b.Authors).FirstOrDefault(b => b.Id == id);
+
+    if (book is null)
+    {
+        logger.LogWarning("Book with id {id} not found", id);
+        return Results.NotFound();
+    }
+
+    return Results.Json(book);
 });
 
 app.MapDefaultEndpoints();

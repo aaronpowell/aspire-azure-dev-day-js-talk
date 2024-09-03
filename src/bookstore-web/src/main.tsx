@@ -1,8 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import { initializeTelemetry } from "./instrumentation.ts";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Layout } from "./pages/_Layout.tsx";
+import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import "./index.css";
-import { initializeTelemetry } from "./otel.ts";
 
 initializeTelemetry(
   window.OTEL_EXPORTER_OTLP_ENDPOINT,
@@ -10,8 +12,31 @@ initializeTelemetry(
   window.OTEL_RESOURCE_ATTRIBUTES
 );
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        lazy: () => import("./pages/Index.tsx"),
+      },
+      {
+        path: "/books",
+        lazy: () => import("./pages/Books/Index.tsx"),
+      },
+      {
+        path: "/books/:id",
+        lazy: () => import("./pages/Books/Book.tsx"),
+      },
+    ],
+  },
+]);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <FluentProvider theme={webLightTheme}>
+      <RouterProvider router={router} />
+    </FluentProvider>
   </StrictMode>
 );

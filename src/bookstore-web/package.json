@@ -12,14 +12,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.54.13",
+    "@fluentui/react-nav-preview": "^0.7.4",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/context-zone": "^1.26.0",
     "@opentelemetry/exporter-trace-otlp-proto": "^0.53.0",
     "@opentelemetry/instrumentation-document-load": "^0.39.0",
     "@opentelemetry/instrumentation-fetch": "^0.53.0",
+    "@opentelemetry/instrumentation-user-interaction": "^0.40.0",
     "@opentelemetry/sdk-trace-web": "^1.26.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

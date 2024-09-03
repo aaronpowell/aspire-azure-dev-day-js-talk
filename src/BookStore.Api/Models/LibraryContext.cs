@@ -17,7 +17,7 @@ public partial class LibraryContext : DbContext
 
     public virtual DbSet<Book> Books { get; set; }
 
-    public virtual DbSet<BookDetails> VwBooksDetails { get; set; }
+    public virtual DbSet<BookDetails> BookDetails { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

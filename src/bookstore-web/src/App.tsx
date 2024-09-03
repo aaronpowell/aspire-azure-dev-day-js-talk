@@ -3,7 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { context, trace } from "@opentelemetry/api";
-import { getSpan } from "./otel";
+import { getSpan } from "./instrumentation";
 
 function App() {
   const [count, setCount] = useState(0);
