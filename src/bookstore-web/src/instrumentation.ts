@@ -46,7 +46,16 @@ export function initializeTelemetry(
       new FetchInstrumentation({
         propagateTraceHeaderCorsUrls: [new RegExp(`\\/api\\/*`)],
       }),
-      // new UserInteractionInstrumentation(),
+      new UserInteractionInstrumentation({
+        eventNames: ["click", "submit"],
+        shouldPreventSpanCreation: (_, element) => {
+          return (
+            element.tagName === "A" ||
+            (element.tagName === "BUTTON" &&
+              element.getAttribute("type") === "submit")
+          );
+        },
+      }),
     ],
   });
 }
