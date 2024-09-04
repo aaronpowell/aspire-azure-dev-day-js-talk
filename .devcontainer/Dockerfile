@@ -7,6 +7,3 @@ ENV PATH $PATH:/home/vscode/.dotnet:/home/vscode/.dotnet/tools
 # Update .NET workload and install .NET Aspire
 RUN sudo dotnet workload update \
     && sudo dotnet workload install aspire
-
-RUN dotnet tool update -g linux-dev-certs \
-    && dotnet linux-dev-certs install

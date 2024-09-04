@@ -24,5 +24,7 @@
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/node:1": {}
-  }
+  },
+
+  "postCreateCommand": "dotnet tool update -g linux-dev-certs && dotnet linux-dev-certs install"
 }
