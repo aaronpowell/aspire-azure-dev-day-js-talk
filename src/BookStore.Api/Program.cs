@@ -46,6 +46,12 @@ app.MapGet("/api/books/{id}", (LibraryContext ctx, int id, ILogger<Program> logg
     return Results.Json(book);
 });
 
+app.MapGet("/api/authors", (LibraryContext context, ILogger<Program> logger) =>
+{
+    logger.LogInformation("Getting all authors");
+    return context.Authors;
+});
+
 app.MapDefaultEndpoints();
 
 app.Run();

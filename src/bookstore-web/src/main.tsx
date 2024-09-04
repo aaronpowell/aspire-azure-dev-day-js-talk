@@ -26,6 +26,10 @@ const router = createBrowserRouter([
         lazy: () => import("./pages/Books/Index.tsx"),
       },
       {
+        path: "/books/new",
+        lazy: () => import("./pages/Books/NewBook.tsx"),
+      },
+      {
         path: "/books/:id",
         lazy: () => import("./pages/Books/Book.tsx"),
       },
