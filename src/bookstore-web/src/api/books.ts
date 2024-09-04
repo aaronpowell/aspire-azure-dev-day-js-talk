@@ -1,22 +1,6 @@
 import { trace } from "@opentelemetry/api";
-
-const apiRoot = `${__API_ENDPOINT__}/api`;
-
-export type Author = {
-  id: number;
-  books: Book[];
-  firstName: string;
-  lastName: string;
-  middleName?: string;
-};
-
-export type Book = {
-  id: number;
-  title: string;
-  authors: Author[] | string;
-  pages?: number;
-  year?: number;
-};
+import { Book } from "./types";
+import { apiRoot } from "./constants";
 
 export function fetchBooks(): Promise<Book[]> {
   return trace
@@ -40,6 +24,41 @@ export function getBook(id: string): Promise<Book | null> {
         span.end();
         return null;
       }
+      span.end();
+      return await res.json();
+    });
+}
+
+export function createBook(
+  title: string,
+  authorId: number,
+  year?: number,
+  pages?: number
+): Promise<Book> {
+  return trace
+    .getTracer("book api")
+    .startActiveSpan("creating book", async (span) => {
+      const res = await fetch(`${apiRoot}/books`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          authorIds: [authorId],
+          year,
+          pages,
+        }),
+      });
+
+      if (!res.ok) {
+        span.addEvent("Book creation failed");
+        span.addEvent("HTTP Error", { status: res.status });
+        span.end();
+        throw new Error("Failed to create book");
+      }
+
+      span.addEvent("Book created", { title, authorId, year, pages });
       span.end();
       return await res.json();
     });

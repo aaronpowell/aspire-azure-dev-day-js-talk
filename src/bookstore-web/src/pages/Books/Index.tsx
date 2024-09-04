@@ -1,6 +1,7 @@
 import { Link, useLoaderData } from "react-router-dom";
-import { Author, Book, fetchBooks } from "../../api/books";
+import { fetchBooks } from "../../api/books";
 import { trace } from "@opentelemetry/api";
+import { Author, Book } from "../../api/types";
 
 export const loader = async () => {
   return trace
